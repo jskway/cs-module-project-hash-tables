@@ -81,6 +81,7 @@ class HashTable:
 
         self.table = [None] * capacity
         self.capacity = capacity
+        self.item_count = 0
 
         for num in range(self.capacity):
             self.table[num] = HashLinkedList()
@@ -107,6 +108,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.item_count / self.capacity
 
 
     def fnv1(self, key):
@@ -150,12 +152,24 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # resize if load factor is above 0.7
+        load_factor = self.get_load_factor()
+        if load_factor > 0.7:
+            self.resize(self.capacity * 2)
+
+
         # Get the hash_index
         hash_index = self.hash_index(key)
 
-        # Store it in our list
-        self.table[hash_index].add_to_head(key, value)
+        # Check if there's already an entry for this key 
+        existing_node = self.table[hash_index].find(key)
+
+        if existing_node is not None:
+            existing_node.value = value
+        else:
+            # Store it in our list
+            self.table[hash_index].add_to_head(key, value)
+            self.item_count += 1
 
     def delete(self, key):
         """
@@ -173,6 +187,8 @@ class HashTable:
 
         if result is None:
             print('Key not found!')
+        else:
+            self.item_count -= 1
 
 
     def get(self, key):
@@ -201,9 +217,33 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # save the old table
+        old_table = self.table
 
+        # make a new array with new_capacity 
+        new_table = [None] * new_capacity
+        for num in range(new_capacity):
+            new_table[num] = HashLinkedList()
 
+        # replace the old table
+        self.table = new_table
+
+        # update the capacity
+        self.capacity = new_capacity
+
+        # reset the item_count
+        self.item_count = 0
+
+        # iterate through the previous array
+        for bucket in old_table:
+            # iterate through the nodes in each bucket (linked list)
+            current = bucket.head
+
+            while current is not None:
+                # store it in the new array
+                self.put(current.key, current.value)
+
+                current = current.next
 
 if __name__ == "__main__":
     ht = HashTable(8)
