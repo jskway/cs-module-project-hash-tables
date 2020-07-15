@@ -1,5 +1,7 @@
 # Your code here
-
+import math
+import random
+factorials = {}
 
 def slowfun_too_slow(x, y):
     v = math.pow(x, y)
@@ -15,7 +17,18 @@ def slowfun(x, y):
     output, but completes quickly instead of taking ages to run.
     """
     # Your code here
+    # Take the result of raising x to the y power
+    v = math.pow(x, y)
 
+    if v not in factorials:
+        # Cache the factorial of v
+        factorials[v] = math.factorial(v)
+
+    v = factorials[v]
+    v //= (x + y)
+    v %= 982451653
+
+    return v
 
 
 # Do not modify below this line!
